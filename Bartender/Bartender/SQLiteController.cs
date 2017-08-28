@@ -5,23 +5,19 @@ using System.Windows.Forms;
 
 namespace Bartender
 {
-    class SQLiteController
+    public class SQLiteController
     {
-        enum Columns {Index, Location, StepNumber, Step};
-        public enum ReservedSymbols {Delimiter = '^'};
-        enum Statements {SELECT };
-
         /// <summary>
-        /// Gets all Menu Items from datasource fileName and table tableName.
+        /// Gets multiple Menu Items from datasource fileName and table tableName based on the desired type.
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public List<MenuItem> getMenuItems(string fileName, string tableName)
+        public List<MenuItem> getMenuItems(string fileName, string tableName, EnumContainer.Type type)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
-            if (tableExists(fileName, tableName))
+            if (fileExists(fileName, tableName))
             {
                 //TODO: Write SELECT stamement builder
             }
@@ -41,7 +37,7 @@ namespace Bartender
         {
             MenuItem menuItem;
 
-            if (tableExists(fileName, tableName))
+            if (fileExists(fileName, tableName))
             {
                 // TODO: Write single row SELECT statement
             }
@@ -61,7 +57,7 @@ namespace Bartender
         {
             if (menuItem.getIndex() > -1)
             {
-                if (tableExists(fileName, tableName))
+                if (fileExists(fileName, tableName))
                 {
                     // TODO: Write INSERT statement builder
                 }
@@ -80,7 +76,7 @@ namespace Bartender
         /// <param name="menuItem"></param>
         public void updateItem(string fileName, string tableName, MenuItem menuItem)
         {
-            if (tableExists(fileName, tableName))
+            if (fileExists(fileName, tableName))
             {
                 MenuItem currentMenuItem = getMenuItem(fileName, tableName, menuItem.getName());
 
@@ -101,7 +97,7 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        private bool tableExists(string fileName, string tableName)
+        public bool fileExists(string fileName, string tableName)
         {
             if (fileName != null)
             {
@@ -132,7 +128,7 @@ namespace Bartender
 
                 command = new SQLiteCommand(statement, connection);
 
-                if (!statement.ToUpper().Contains(Statements.SELECT.ToString()))
+                if (!statement.ToUpper().Contains(EnumContainer.Statements.SELECT.ToString()))
                     command.ExecuteNonQuery();
                 else
                     reader = command.ExecuteReader();
@@ -158,13 +154,13 @@ namespace Bartender
             while (reader.Read())
             {
                 menuItems.Add(
-                    reader[Columns.Index.ToString()].ToString() +
-                    ReservedSymbols.Delimiter.ToString() +
-                    reader[Columns.Location.ToString()].ToString() +
-                    ReservedSymbols.Delimiter.ToString() +
-                    reader[Columns.StepNumber.ToString()].ToString() +
-                    ReservedSymbols.Delimiter.ToString() +
-                    reader[Columns.Step.ToString()].ToString());
+                    reader[EnumContainer.Columns.Index.ToString()].ToString() +
+                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
+                    reader[EnumContainer.Columns.Location.ToString()].ToString() +
+                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
+                    reader[EnumContainer.Columns.StepNumber.ToString()].ToString() +
+                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
+                    reader[EnumContainer.Columns.Step.ToString()].ToString());
             }
 
             return menuItems;
@@ -213,7 +209,7 @@ namespace Bartender
         /// <returns></returns>
         public void deleteItem(string fileName, string tableName, MenuItem menuItem)
         {
-            if (tableExists(fileName, tableName))
+            if (fileExists(fileName, tableName))
             {
                 // TODO: Create DELETE FROM TABLE statement builder
             }
@@ -230,7 +226,7 @@ namespace Bartender
         {
             List<string> uniqueItems = new List<string>();
 
-            if (tableExists(fileName, tableName))
+            if (fileExists(fileName, tableName))
             {
                 // TODO: Create SELECT UNIQUE statment builder
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace Bartender
 {
@@ -9,6 +10,7 @@ namespace Bartender
         string ImageLocation;
         string Name;
         int Index;
+        Image image;
 
         public MenuItem(string location, string name)
         {

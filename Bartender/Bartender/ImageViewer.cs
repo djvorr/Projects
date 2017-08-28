@@ -12,9 +12,13 @@ namespace Bartender
 {
     public partial class ImageViewer : Form
     {
-        public ImageViewer()
+        public ImageViewer(string path)
         {
             InitializeComponent();
+
+            pictureBox1.Image = Image.FromFile(path);
+
+
         }
     }
 }
