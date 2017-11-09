@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Windows.Forms;
 
+
 namespace Bartender
 {
     public class SQLiteController
@@ -65,7 +66,7 @@ namespace Bartender
             }
             else
                 MessageBox.Show(Message.ALREADY_EXIST + ' ' + Message.CREATE_NEW);
-                
+
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace Bartender
         /// </summary>
         /// <param name="statement"></param>
         /// <returns></returns>
-        private List<string> execute(string fileName, string statement)
+        private List<Row> execute(string fileName, string statement, EnumContainer.TableName tableName)
         {
             SQLiteCommand command;
             SQLiteDataReader reader = null;
@@ -136,35 +137,59 @@ namespace Bartender
                 connection.Close();
 
                 if (reader != null)
-                    return readData(reader);
+                {
+                    return parseReader(reader, tableName);
+                }
             }
 
             return null;
         }
 
         /// <summary>
-        /// Reades the data from the parser. Returns menuItem(s) in ^-delimited list of strings.
+        /// Reads the data from the parser. Returns a row of the appropriate type.
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private List<string> readData(SQLiteDataReader reader)
+        private List<Row> parseReader(SQLiteDataReader reader, EnumContainer.TableName tableName)
         {
-            List<string> menuItems = new List<string>();
+            List<Row> rows = new List<Row>();
 
             while (reader.Read())
             {
-                menuItems.Add(
-                    reader[EnumContainer.Columns.Index.ToString()].ToString() +
-                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
-                    reader[EnumContainer.Columns.Location.ToString()].ToString() +
-                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
-                    reader[EnumContainer.Columns.StepNumber.ToString()].ToString() +
-                    EnumContainer.ReservedSymbols.Delimiter.ToString() +
-                    reader[EnumContainer.Columns.Step.ToString()].ToString());
+                if (tableName == EnumContainer.TableName.MenuItem)
+                {
+                    rows.Add(new MenuItemRow(
+                        reader[EnumContainer.MenuItemColumns.Name.ToString()].ToString(),
+                        (EnumContainer.Type)int.Parse(reader[EnumContainer.MenuItemColumns.Type.ToString()].ToString()),
+                        int.Parse(reader[EnumContainer.MenuItemColumns.NumSteps.ToString()].ToString()),
+                        reader[EnumContainer.MenuItemColumns.Path.ToString()].ToString(),
+                        (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.MenuItemColumns.Active.ToString()].ToString())));
+                }
+                else if (tableName == EnumContainer.TableName.Steps)
+                {
+                    rows.Add(new StepsRow(
+                        reader[EnumContainer.StepsColumns.Name.ToString()].ToString(),
+                        int.Parse(reader[EnumContainer.StepsColumns.StepNum.ToString()].ToString()),
+                        reader[EnumContainer.StepsColumns.Description.ToString()].ToString(),
+                        (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.StepsColumns.Active.ToString()].ToString())));
+                }
+                else if (tableName == EnumContainer.TableName.Ingredients)
+                {
+                    rows.Add(new IngredientsRow(
+                        reader[EnumContainer.IngredientColumns.Name.ToString()].ToString(),
+                        reader[EnumContainer.IngredientColumns.Ingredient.ToString()].ToString(),
+                        int.Parse(reader[EnumContainer.IngredientColumns.UnitCount.ToString()].ToString()),
+                        reader[EnumContainer.IngredientColumns.Unit.ToString()].ToString(),
+                        (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.IngredientColumns.Active.ToString()].ToString())));
+                }
+                else
+                    throw new System.Exception(Message.PARSE_READER_ERROR);
+
             }
 
-            return menuItems;
+            return rows;
         }
+
 
         /// <summary>
         /// Creates a SQLite file if it doesn't already exist. Returns true if created, otherwise 
@@ -174,7 +199,7 @@ namespace Bartender
         /// <returns></returns>
         private bool createFile(string fileName)
         {
-            if(!File.Exists(fileName))
+            if (!File.Exists(fileName))
             {
                 SQLiteConnection.CreateFile(fileName);
                 return true;
@@ -233,5 +258,87 @@ namespace Bartender
 
             return uniqueItems;
         }
+
+        #region SubClasses
+
+        public abstract class Row
+        { }
+
+        public class MenuItemRow : Row
+        {
+            public string Name = "";
+            public EnumContainer.Type Type = EnumContainer.Type.Null;
+            public int NumSteps = -1;
+            public string Path = "";
+            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
+
+            /// <summary>
+            /// This class is dedicated to holding the information parsed from the MenuItem table by row.
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="type"></param>
+            /// <param name="numSteps"></param>
+            /// <param name="path"></param>
+            /// <param name="active"></param>
+            public MenuItemRow(string name, EnumContainer.Type type, int numSteps, string path, EnumContainer.ActivityLevel active)
+            {
+                Name = name;
+                Type = type;
+                NumSteps = numSteps;
+                Path = path;
+                Active = active;
+            }
+        }
+
+        public class StepsRow : Row
+        {
+            public string Name = "";
+            public int StepNum = -1;
+            public string StepDescription = "";
+            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
+
+            /// <summary>
+            /// This class is dedicated to holding the information parsed from the Steps table by row.
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="type"></param>
+            /// <param name="stepNum"></param>
+            /// <param name="stepDesc"></param>
+            /// <param name="active"></param>
+            public StepsRow(string name, int stepNum, string stepDesc, EnumContainer.ActivityLevel active)
+            {
+                Name = name;
+                StepNum = stepNum;
+                StepDescription = stepDesc;
+                Active = active;
+            }
+        }
+
+        public class IngredientsRow : Row
+        {
+            public string Name = "";
+            public string Ingredient = "";
+            public int UnitCount = -1;
+            public string Unit = "";
+            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
+
+            /// <summary>
+            /// This class is dedicated to holding the information parsed from the Ingredients table by row.
+            /// </summary>
+            /// <param name="name"></param>
+            /// <param name="ingredient"></param>
+            /// <param name="unitCount"></param>
+            /// <param name="unit"></param>
+            /// <param name="active"></param>
+            public IngredientsRow(string name, string ingredient, int unitCount, string unit, EnumContainer.ActivityLevel active)
+            {
+                Name = name;
+                Ingredient = ingredient;
+                UnitCount = unitCount;
+                Unit = unit;
+                Active = active;
+            }
+        }
+        #endregion
     }
 }

@@ -106,6 +106,7 @@
             this.imageToolStripMenuItem.Name = "imageToolStripMenuItem";
             this.imageToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
             this.imageToolStripMenuItem.Text = "Image";
+            this.imageToolStripMenuItem.Click += new System.EventHandler(this.imageToolStripMenuItem_Click);
             // 
             // drinksOnlyToolStripMenuItem
             // 

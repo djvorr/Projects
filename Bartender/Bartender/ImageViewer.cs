@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace Bartender
@@ -16,9 +9,14 @@ namespace Bartender
         {
             InitializeComponent();
 
-            pictureBox1.Image = Image.FromFile(path);
-
-
+            if (path == null || path.Length == 0)
+            {
+                pictureBox1.Image = Image.FromFile("no_image_available.jpeg");
+            }
+            else
+            {
+                pictureBox1.Image = Image.FromFile(path);
+            }
         }
     }
 }

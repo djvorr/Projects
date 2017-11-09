@@ -13,9 +13,6 @@ namespace Bartender
         {
             InitializeComponent();
 
-            ImageViewer im = new ImageViewer("no_image_available.jpeg");
-            im.Show();
-
         }
 
         /// <summary>
@@ -117,6 +114,18 @@ namespace Bartender
                 listBox.SelectedIndex = index;
             else
                 listBox.SelectedIndex = 0;
+        }
+
+        /// <summary>
+        /// This is the event that is triggered when File>View>Image is clicked. It brings up an image 
+        /// viewer of whatever the selected image is.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void imageToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            ImageViewer im = new ImageViewer(null);
+            im.Show();
         }
     }
 }
