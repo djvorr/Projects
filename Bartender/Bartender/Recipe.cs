@@ -1,7 +1,7 @@
 ﻿
 namespace Bartender
 {
-    public class Recipe : MenuItem
+    public class Recipe : OldMenuItem
     {
         Recipe(string location, string name) : base(location, name)
         {

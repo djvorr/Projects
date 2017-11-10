@@ -1,91 +1,108 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Bartender
 {
-    public abstract class MenuItem
+    public class MenuItem
     {
-        List<string> Steps;
-        bool HasChanged;
-        string ImageLocation;
-        string Name;
-        int Index;
-        Image image;
+        /*I would like to point out, the reason these are all collections is because of the 
+         * database system. This application will likely not ship with deletion options. Instead,
+         * every row in every table has an ACTIVE field for whether or not it should be used. */
 
-        public MenuItem(string location, string name)
-        {
-            ImageLocation = location;
-            Name = name;
-        }
+        private List<MenuItemRow> Headers;
+        private List<StepsRow> Steps;
+        private List<IngredientsRow> Ingredients;
+        private List<ImageRow> Images;
 
         /// <summary>
-        /// Adds a single step to the end of the current steps list.
+        /// This class is dedicated to storing all the information for each item entry.
         /// </summary>
-        /// <param name="step"></param>
-        public void addStep(string step)
-        {
-            Steps.Add(step);
-        }
-
-        /// <summary>
-        /// Sets the new list of steps as the recipe steps. Overrites any existing steps.
-        /// </summary>
+        /// <param name="headers"></param>
         /// <param name="steps"></param>
-        public void setSteps(List<string> steps)
+        /// <param name="ingredients"></param>
+        /// <param name="images"></param>
+        public MenuItem(List<MenuItemRow> headers, List<StepsRow> steps, List<IngredientsRow>  ingredients, List<ImageRow> images)
         {
+            Headers = headers;
             Steps = steps;
+            Ingredients = ingredients;
+            Images = images;
         }
 
         /// <summary>
-        /// Adds new steps to the existing ones.
+        /// This method returns the first active MenuItemRow with the name, type, number of steps, 
+        /// and activity level of the header.
         /// </summary>
-        /// <param name="steps"></param>
-        public void addSteps(List<string> steps)
+        /// <returns></returns>
+        public MenuItemRow getHeader()
         {
-            Steps.AddRange(steps);
+            foreach (MenuItemRow item in Headers)
+            {
+                if (item.Active == EnumContainer.ActivityLevel.Active)
+                {
+                    return item; 
+                }
+            }
+
+            throw new Exception(Message.MENU_ITEM_ROW_INVALID);
         }
 
         /// <summary>
-        /// Sets the hasChanged status to true.
+        /// THis method returns a list of all active steps sorted, in order by step number.
         /// </summary>
-        public void changedStatusTrue()
+        /// <returns></returns>
+        public List<StepsRow> getSteps()
         {
-            HasChanged = true;
+            List<StepsRow> steps = new List<StepsRow>();
+
+            foreach (StepsRow row in Steps)
+            {
+                if (row.Active == EnumContainer.ActivityLevel.Active)
+                    steps.Add(row);
+            }
+
+            steps.Sort((x, y) => x.StepNum.CompareTo(y.StepNum)); 
+
+            return steps;
         }
 
         /// <summary>
-        /// Gets the path of the image location inclusive of the name and extension.
+        /// This method returns all active ingredients in no given order.
         /// </summary>
         /// <returns></returns>
-        public string getImageLocation()
-        { return ImageLocation; }
+        public List<IngredientsRow> getIngredients()
+        {
+            List<IngredientsRow> ingredients = new List<IngredientsRow>();
+
+            foreach (IngredientsRow row in Ingredients)
+            {
+                if (row.Active == EnumContainer.ActivityLevel.Active)
+                    ingredients.Add(row);
+            }
+
+            return ingredients;
+        }
+
 
         /// <summary>
-        /// Returns a list of all the current steps.
+        /// This method returns the first active ImagesRow with the name, image, and activity 
+        /// level of the header.
         /// </summary>
         /// <returns></returns>
-        public List<string> getSteps()
-        { return Steps; }
+        public MenuItemRow getImage()
+        {
+            foreach (MenuItemRow item in Headers)
+            {
+                if (item.Active == EnumContainer.ActivityLevel.Active)
+                {
+                    return item;
+                }
+            }
 
-        /// <summary>
-        /// Returns true if the information has changed, otherwise returns false;
-        /// </summary>
-        /// <returns></returns>
-        public bool getChangedStatus()
-        { return HasChanged; }
-
-        /// <summary>
-        /// Returns the user's name for the menu item.
-        /// </summary>
-        /// <returns></returns>
-        public string getName()
-        { return Name; }
-
-        /// <summary>
-        /// Returns the assigned index location of the menu item.
-        /// </summary>
-        /// <returns></returns>
-        public int getIndex()
-        { return Index; }
+            throw new Exception(Message.IMAGE_ROW_INVALID);
+        }
     }
 }

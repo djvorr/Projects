@@ -9,6 +9,8 @@ namespace Bartender
         string FILENAME = "MenuItems.sqlite";
         string TABLENAME = "MenuItems";
 
+        
+
         public MainForm()
         {
             InitializeComponent();
@@ -22,9 +24,9 @@ namespace Bartender
         {
             if ((new SQLiteController()).fileExists(FILENAME, TABLENAME))
             {
-                List<MenuItem> menuItems = getMenuItems(type);
+                List<OldMenuItem> menuItems = getMenuItems(type);
 
-                foreach (MenuItem item in menuItems)
+                foreach (OldMenuItem item in menuItems)
                 {
                     lbMenuItems.Items.Add(item.getName());
                 }
@@ -55,9 +57,9 @@ namespace Bartender
         /// <param name="menuItems"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        private MenuItem getMenuItemRef(List<MenuItem> menuItems, string name)
+        private OldMenuItem getMenuItemRef(List<OldMenuItem> menuItems, string name)
         {
-            foreach (MenuItem item in menuItems)
+            foreach (OldMenuItem item in menuItems)
             {
                 if (item.getName() == name)
                     return item;
@@ -71,7 +73,7 @@ namespace Bartender
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private List<MenuItem> getMenuItems(EnumContainer.Type type)
+        private List<OldMenuItem> getMenuItems(EnumContainer.Type type)
         {
             SQLiteController controller = new SQLiteController();
             return controller.getMenuItems(FILENAME, TABLENAME, type);

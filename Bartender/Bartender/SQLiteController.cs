@@ -14,9 +14,9 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public List<MenuItem> getMenuItems(string fileName, string tableName, EnumContainer.Type type)
+        public List<OldMenuItem> getMenuItems(string fileName, string tableName, EnumContainer.Type type)
         {
-            List<MenuItem> menuItems = new List<MenuItem>();
+            List<OldMenuItem> menuItems = new List<OldMenuItem>();
 
             if (fileExists(fileName, tableName))
             {
@@ -34,9 +34,9 @@ namespace Bartender
         /// <param name="tableName"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public MenuItem getMenuItem(string fileName, string tableName, string itemName)
+        public OldMenuItem getMenuItem(string fileName, string tableName, string itemName)
         {
-            MenuItem menuItem;
+            OldMenuItem menuItem;
 
             if (fileExists(fileName, tableName))
             {
@@ -54,18 +54,18 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <param name="menuItem"></param>
-        public void insertMenuItem(string fileName, string tableName, MenuItem menuItem)
+        public void insertMenuItem(string fileName, string tableName, OldMenuItem menuItem)
         {
-            if (menuItem.getIndex() > -1)
-            {
-                if (fileExists(fileName, tableName))
-                {
-                    // TODO: Write INSERT statement builder
-                }
+            //if (menuItem.getIndex() > -1)
+            //{
+            //    if (fileExists(fileName, tableName))
+            //    {
+            //        // TODO: Write INSERT statement builder
+            //    }
 
-            }
-            else
-                MessageBox.Show(Message.ALREADY_EXIST + ' ' + Message.CREATE_NEW);
+            //}
+            //else
+            //    MessageBox.Show(Message.ALREADY_EXIST + ' ' + Message.CREATE_NEW);
 
         }
 
@@ -75,21 +75,21 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <param name="menuItem"></param>
-        public void updateItem(string fileName, string tableName, MenuItem menuItem)
+        public void updateItem(string fileName, string tableName, OldMenuItem menuItem)
         {
-            if (fileExists(fileName, tableName))
-            {
-                MenuItem currentMenuItem = getMenuItem(fileName, tableName, menuItem.getName());
+            //if (fileExists(fileName, tableName))
+            //{
+            //    OldMenuItem currentMenuItem = getMenuItem(fileName, tableName, menuItem.getName());
 
-                if (currentMenuItem != null)
-                {
-                    // TODO: Write UPDATE statement builder
-                }
-                else
-                {
-                    insertMenuItem(fileName, tableName, menuItem);
-                }
-            }
+            //    if (currentMenuItem != null)
+            //    {
+            //        // TODO: Write UPDATE statement builder
+            //    }
+            //    else
+            //    {
+            //        insertMenuItem(fileName, tableName, menuItem);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -162,7 +162,6 @@ namespace Bartender
                         reader[EnumContainer.MenuItemColumns.Name.ToString()].ToString(),
                         (EnumContainer.Type)int.Parse(reader[EnumContainer.MenuItemColumns.Type.ToString()].ToString()),
                         int.Parse(reader[EnumContainer.MenuItemColumns.NumSteps.ToString()].ToString()),
-                        reader[EnumContainer.MenuItemColumns.Path.ToString()].ToString(),
                         (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.MenuItemColumns.Active.ToString()].ToString())));
                 }
                 else if (tableName == EnumContainer.TableName.Steps)
@@ -181,6 +180,14 @@ namespace Bartender
                         int.Parse(reader[EnumContainer.IngredientColumns.UnitCount.ToString()].ToString()),
                         reader[EnumContainer.IngredientColumns.Unit.ToString()].ToString(),
                         (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.IngredientColumns.Active.ToString()].ToString())));
+                }
+                else if (tableName == EnumContainer.TableName.Images)
+                {
+                    rows.Add(new ImageRow(
+                        reader[EnumContainer.ImagesColumns.Name.ToString()].ToString(),
+                        (byte[])reader[EnumContainer.ImagesColumns.Image.ToString()],
+                        null,
+                        (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.ImagesColumns.Active.ToString()].ToString())));
                 }
                 else
                     throw new System.Exception(Message.PARSE_READER_ERROR);
@@ -232,7 +239,7 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public void deleteItem(string fileName, string tableName, MenuItem menuItem)
+        public void deleteItem(string fileName, string tableName, OldMenuItem menuItem)
         {
             if (fileExists(fileName, tableName))
             {
@@ -258,87 +265,5 @@ namespace Bartender
 
             return uniqueItems;
         }
-
-        #region SubClasses
-
-        public abstract class Row
-        { }
-
-        public class MenuItemRow : Row
-        {
-            public string Name = "";
-            public EnumContainer.Type Type = EnumContainer.Type.Null;
-            public int NumSteps = -1;
-            public string Path = "";
-            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
-
-            /// <summary>
-            /// This class is dedicated to holding the information parsed from the MenuItem table by row.
-            /// </summary>
-            /// <param name="name"></param>
-            /// <param name="type"></param>
-            /// <param name="numSteps"></param>
-            /// <param name="path"></param>
-            /// <param name="active"></param>
-            public MenuItemRow(string name, EnumContainer.Type type, int numSteps, string path, EnumContainer.ActivityLevel active)
-            {
-                Name = name;
-                Type = type;
-                NumSteps = numSteps;
-                Path = path;
-                Active = active;
-            }
-        }
-
-        public class StepsRow : Row
-        {
-            public string Name = "";
-            public int StepNum = -1;
-            public string StepDescription = "";
-            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
-
-            /// <summary>
-            /// This class is dedicated to holding the information parsed from the Steps table by row.
-            /// </summary>
-            /// <param name="name"></param>
-            /// <param name="type"></param>
-            /// <param name="stepNum"></param>
-            /// <param name="stepDesc"></param>
-            /// <param name="active"></param>
-            public StepsRow(string name, int stepNum, string stepDesc, EnumContainer.ActivityLevel active)
-            {
-                Name = name;
-                StepNum = stepNum;
-                StepDescription = stepDesc;
-                Active = active;
-            }
-        }
-
-        public class IngredientsRow : Row
-        {
-            public string Name = "";
-            public string Ingredient = "";
-            public int UnitCount = -1;
-            public string Unit = "";
-            public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
-
-            /// <summary>
-            /// This class is dedicated to holding the information parsed from the Ingredients table by row.
-            /// </summary>
-            /// <param name="name"></param>
-            /// <param name="ingredient"></param>
-            /// <param name="unitCount"></param>
-            /// <param name="unit"></param>
-            /// <param name="active"></param>
-            public IngredientsRow(string name, string ingredient, int unitCount, string unit, EnumContainer.ActivityLevel active)
-            {
-                Name = name;
-                Ingredient = ingredient;
-                UnitCount = unitCount;
-                Unit = unit;
-                Active = active;
-            }
-        }
-        #endregion
     }
 }
