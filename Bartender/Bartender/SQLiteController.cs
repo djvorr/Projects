@@ -47,27 +47,7 @@ namespace Bartender
 
 
 
-            return buildMenuItemList(data);
-        }
-
-        /// <summary>
-        /// Builds the list of all Menu Items with all available information for only the active fields.
-        /// </summary>
-        /// <returns></returns>
-        private List<MenuItem> buildMenuItemList(List<Row> rows)
-        {
-            List<MenuItem> menuItems = new List<MenuItem>();
-
-            foreach(MenuItemRow menuItemRow in rows)
-            {
-                if (menuItemRow.Active == EnumContainer.ActivityLevel.Active)
-                {
-                    //TODO: Finish writing thie menuitem row combiner.
-                   // menuItems.Add(new MenuItem(menuItemRow, null, null, null));
-                }
-            }
-
-            return menuItems;
+            return MenuItemDataConverter.buildMenuItemList(data);
         }
 
         /// <summary>

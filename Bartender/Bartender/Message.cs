@@ -9,5 +9,6 @@ namespace Bartender
         public static string MENU_ITEM_ROW_INVALID = "Error code 1003: Error returning the MenuItemRow header.";
         public static string IMAGE_ROW_INVALID = "Error code 1004: Error returning the ImageRow image.";
         public static string NO_FILE_FOUND = "Error code 1005: No Database file found.";
+        public static string MENU_ITEM_NO_TYPE = "Error code 1006: No type could be determined.";
     }
 }

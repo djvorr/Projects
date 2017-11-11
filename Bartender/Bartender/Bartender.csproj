@@ -86,6 +86,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MenuItem.cs" />
+    <Compile Include="MenuItemDataConverter.cs" />
     <Compile Include="OldMenuItem.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Program.cs" />

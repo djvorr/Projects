@@ -33,6 +33,17 @@ namespace Bartender
         }
 
         /// <summary>
+        /// This class is dedicated to storing all the information for each item entry.
+        /// </summary>
+        public MenuItem()
+        {
+            Headers = new List<MenuItemRow>();
+            Steps = new List<StepsRow>(); ;
+            Ingredients = new List<IngredientsRow>();
+            Images = new List<ImageRow>();
+        }
+
+        /// <summary>
         /// This method returns the first active MenuItemRow with the name, type, number of steps, 
         /// and activity level of the header.
         /// </summary>
@@ -48,6 +59,42 @@ namespace Bartender
             }
 
             throw new Exception(Message.MENU_ITEM_ROW_INVALID);
+        }
+
+        /// <summary>
+        /// Adds a MenuItem row to the MenuItemRow attribute.
+        /// </summary>
+        /// <param name="row"></param>
+        public void addMenuItemRow(MenuItemRow row)
+        {
+            Headers.Add(row);
+        }
+
+        /// <summary>
+        /// Adds a StepsRow to the StepsRow attribute.
+        /// </summary>
+        /// <param name="row"></param>
+        public void addStepsRow(StepsRow row)
+        {
+            Steps.Add(row);
+        }
+
+        /// <summary>
+        /// Adds a ImageRow to the ImageRow attribute.
+        /// </summary>
+        /// <param name="row"></param>
+        public void addImageRow(ImageRow row)
+        {
+            Images.Add(row);
+        }
+
+        /// <summary>
+        /// Adds a IngredientsRow to the IngredientsRow attribute.
+        /// </summary>
+        /// <param name="row"></param>
+        public void addIngredientsRow(IngredientsRow row)
+        {
+            Ingredients.Add(row);
         }
 
         /// <summary>
@@ -104,6 +151,25 @@ namespace Bartender
             }
 
             throw new Exception(Message.IMAGE_ROW_INVALID);
+        }
+
+        /// <summary>
+        /// Determines if the MenuItem stores any object that implements the abstract Row class.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <returns></returns>
+        public bool hasRow(Row row)
+        {
+            if (row.GetType() == typeof(MenuItem))
+                return Headers.Contains(row);
+            else if (row.GetType() == typeof(StepsRow))
+                return Steps.Contains(row);
+            else if (row.GetType() == typeof(IngredientsRow))
+                return Ingredients.Contains(row);
+            else if (row.GetType() == typeof(ImageRow))
+                return Images.Contains(row);
+
+            throw new Exception(Message.MENU_ITEM_NO_TYPE);
         }
 
         #region subclasses
