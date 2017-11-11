@@ -1,28 +1,71 @@
 ﻿using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
-using System.Windows.Forms;
+using System;
 
 
 namespace Bartender
 {
     public class SQLiteController
     {
+        //TODO: Consider taking out all the file exists and table exists since the startup check was created.
+
+        /// <summary>
+        /// This method is a startup method that checks to see if the database is created and initialized.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void runSetup(string fileName)
+        {
+            if (fileName != null)
+            {
+                if (!File.Exists(fileName))
+                {
+                    createFile(fileName);
+
+                    foreach (string tableName in Enum.GetNames(typeof(EnumContainer.TableNames)))
+                    {
+                        createTable(fileName, tableName);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Gets multiple Menu Items from datasource fileName and table tableName based on the desired type.
         /// </summary>
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public List<OldMenuItem> getMenuItems(string fileName, string tableName, EnumContainer.Type type)
+        public List<MenuItem> getMenuItems(string fileName, EnumContainer.Type type)
         {
-            List<OldMenuItem> menuItems = new List<OldMenuItem>();
+             List<Row> data = new List<Row>();
 
-            if (fileExists(fileName, tableName))
+            if (fileExists(fileName))
             {
                 //TODO: Write SELECT stamement builder
             }
 
+
+
+            return buildMenuItemList(data);
+        }
+
+        /// <summary>
+        /// Builds the list of all Menu Items with all available information for only the active fields.
+        /// </summary>
+        /// <returns></returns>
+        private List<MenuItem> buildMenuItemList(List<Row> rows)
+        {
+            List<MenuItem> menuItems = new List<MenuItem>();
+
+            foreach(MenuItemRow menuItemRow in rows)
+            {
+                if (menuItemRow.Active == EnumContainer.ActivityLevel.Active)
+                {
+                    //TODO: Finish writing thie menuitem row combiner.
+                   // menuItems.Add(new MenuItem(menuItemRow, null, null, null));
+                }
+            }
 
             return menuItems;
         }
@@ -34,11 +77,11 @@ namespace Bartender
         /// <param name="tableName"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public OldMenuItem getMenuItem(string fileName, string tableName, string itemName)
+        public MenuItem getMenuItem(string fileName, string tableName, string itemName)
         {
-            OldMenuItem menuItem;
+            MenuItem menuItem;
 
-            if (fileExists(fileName, tableName))
+            if (fileExists(fileName))
             {
                 // TODO: Write single row SELECT statement
             }
@@ -54,7 +97,7 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <param name="menuItem"></param>
-        public void insertMenuItem(string fileName, string tableName, OldMenuItem menuItem)
+        public void insertMenuItem(string fileName, string tableName, MenuItem menuItem)
         {
             //if (menuItem.getIndex() > -1)
             //{
@@ -75,7 +118,7 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <param name="menuItem"></param>
-        public void updateItem(string fileName, string tableName, OldMenuItem menuItem)
+        public void updateItem(string fileName, string tableName, MenuItem menuItem)
         {
             //if (fileExists(fileName, tableName))
             //{
@@ -98,7 +141,7 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public bool fileExists(string fileName, string tableName)
+        public bool fileExists(string fileName)
         {
             if (fileName != null)
             {
@@ -108,7 +151,7 @@ namespace Bartender
                 }
             }
 
-            return false;
+            throw new Exception(Message.NO_FILE_FOUND);
         }
 
         /// <summary>
@@ -117,7 +160,7 @@ namespace Bartender
         /// </summary>
         /// <param name="statement"></param>
         /// <returns></returns>
-        private List<Row> execute(string fileName, string statement, EnumContainer.TableName tableName)
+        private List<Row> execute(string fileName, string statement, EnumContainer.TableNames tableName)
         {
             SQLiteCommand command;
             SQLiteDataReader reader = null;
@@ -129,7 +172,7 @@ namespace Bartender
 
                 command = new SQLiteCommand(statement, connection);
 
-                if (!statement.ToUpper().Contains(EnumContainer.Statements.SELECT.ToString()))
+                if (!statement.ToUpper().Contains(Enum.GetName(typeof(EnumContainer.Statements), EnumContainer.Statements.SELECT).ToString()))
                     command.ExecuteNonQuery();
                 else
                     reader = command.ExecuteReader();
@@ -150,21 +193,22 @@ namespace Bartender
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        private List<Row> parseReader(SQLiteDataReader reader, EnumContainer.TableName tableName)
+        private List<Row> parseReader(SQLiteDataReader reader, EnumContainer.TableNames tableName)
         {
             List<Row> rows = new List<Row>();
 
             while (reader.Read())
             {
-                if (tableName == EnumContainer.TableName.MenuItem)
+                if (tableName == EnumContainer.TableNames.MenuItem)
                 {
                     rows.Add(new MenuItemRow(
                         reader[EnumContainer.MenuItemColumns.Name.ToString()].ToString(),
                         (EnumContainer.Type)int.Parse(reader[EnumContainer.MenuItemColumns.Type.ToString()].ToString()),
                         int.Parse(reader[EnumContainer.MenuItemColumns.NumSteps.ToString()].ToString()),
+                        reader[EnumContainer.MenuItemColumns.Tags.ToString()].ToString(),
                         (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.MenuItemColumns.Active.ToString()].ToString())));
                 }
-                else if (tableName == EnumContainer.TableName.Steps)
+                else if (tableName == EnumContainer.TableNames.Steps)
                 {
                     rows.Add(new StepsRow(
                         reader[EnumContainer.StepsColumns.Name.ToString()].ToString(),
@@ -172,7 +216,7 @@ namespace Bartender
                         reader[EnumContainer.StepsColumns.Description.ToString()].ToString(),
                         (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.StepsColumns.Active.ToString()].ToString())));
                 }
-                else if (tableName == EnumContainer.TableName.Ingredients)
+                else if (tableName == EnumContainer.TableNames.Ingredients)
                 {
                     rows.Add(new IngredientsRow(
                         reader[EnumContainer.IngredientColumns.Name.ToString()].ToString(),
@@ -181,7 +225,7 @@ namespace Bartender
                         reader[EnumContainer.IngredientColumns.Unit.ToString()].ToString(),
                         (EnumContainer.ActivityLevel)int.Parse(reader[EnumContainer.IngredientColumns.Active.ToString()].ToString())));
                 }
-                else if (tableName == EnumContainer.TableName.Images)
+                else if (tableName == EnumContainer.TableNames.Images)
                 {
                     rows.Add(new ImageRow(
                         reader[EnumContainer.ImagesColumns.Name.ToString()].ToString(),
@@ -239,9 +283,9 @@ namespace Bartender
         /// <param name="fileName"></param>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public void deleteItem(string fileName, string tableName, OldMenuItem menuItem)
+        private void deleteItem(string fileName, string tableName, MenuItem menuItem)
         {
-            if (fileExists(fileName, tableName))
+            if (fileExists(fileName))
             {
                 // TODO: Create DELETE FROM TABLE statement builder
             }
@@ -258,7 +302,7 @@ namespace Bartender
         {
             List<string> uniqueItems = new List<string>();
 
-            if (fileExists(fileName, tableName))
+            if (fileExists(fileName))
             {
                 // TODO: Create SELECT UNIQUE statment builder
             }

@@ -11,6 +11,7 @@ namespace Bartender
         public string Name = "";
         public EnumContainer.Type Type = EnumContainer.Type.Null;
         public int NumSteps = -1;
+        public string Tags = "";
         public EnumContainer.ActivityLevel Active = EnumContainer.ActivityLevel.Null;
 
         /// <summary>
@@ -21,11 +22,12 @@ namespace Bartender
         /// <param name="numSteps"></param>
         /// <param name="path"></param>
         /// <param name="active"></param>
-        public MenuItemRow(string name, EnumContainer.Type type, int numSteps, EnumContainer.ActivityLevel active)
+        public MenuItemRow(string name, EnumContainer.Type type, int numSteps, string tags, EnumContainer.ActivityLevel active)
         {
             Name = name;
             Type = type;
             NumSteps = numSteps;
+            Tags = tags;
             Active = active;
         }
     }

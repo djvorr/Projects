@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System;
 
 namespace Bartender
 {
     public partial class MainForm : Form
     {
         string FILENAME = "MenuItems.sqlite";
-        string TABLENAME = "MenuItems";
-
-        
+        private List<MenuItem> menuItems = new List<MenuItem>();
 
         public MainForm()
         {
             InitializeComponent();
-
+            new SQLiteController().runSetup(FILENAME);
         }
 
         /// <summary>
@@ -22,13 +21,14 @@ namespace Bartender
         /// </summary>
         private void loadControls(EnumContainer.Type type)
         {
-            if ((new SQLiteController()).fileExists(FILENAME, TABLENAME))
+            //TODO: consider removing check
+            if ((new SQLiteController()).fileExists(FILENAME))
             {
-                List<OldMenuItem> menuItems = getMenuItems(type);
+                List<MenuItem> menuItems = getMenuItems(type);
 
-                foreach (OldMenuItem item in menuItems)
+                foreach (MenuItem item in menuItems)
                 {
-                    lbMenuItems.Items.Add(item.getName());
+                    lbMenuItems.Items.Add(item.getHeader().Name);
                 }
 
                 lbMenuItems.SelectedIndex = 0;
@@ -57,11 +57,11 @@ namespace Bartender
         /// <param name="menuItems"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        private OldMenuItem getMenuItemRef(List<OldMenuItem> menuItems, string name)
+        private MenuItem getMenuItemRef(List<MenuItem> menuItems, string name)
         {
-            foreach (OldMenuItem item in menuItems)
+            foreach (MenuItem item in menuItems)
             {
-                if (item.getName() == name)
+                if (item.getHeader().Name == name)
                     return item;
             }
 
@@ -73,10 +73,10 @@ namespace Bartender
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private List<OldMenuItem> getMenuItems(EnumContainer.Type type)
+        private List<MenuItem> getMenuItems(EnumContainer.Type type)
         {
             SQLiteController controller = new SQLiteController();
-            return controller.getMenuItems(FILENAME, TABLENAME, type);
+            return controller.getMenuItems(FILENAME, type);
         }
 
         /// <summary>

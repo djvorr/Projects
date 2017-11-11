@@ -51,20 +51,21 @@ namespace Bartender
         }
 
         /// <summary>
-        /// THis method returns a list of all active steps sorted, in order by step number.
+        /// THis method returns a list of all active step number/descpription pairs sorted, in order, by step number.
         /// </summary>
         /// <returns></returns>
-        public List<StepsRow> getSteps()
+        public List<string> getSteps()
         {
-            List<StepsRow> steps = new List<StepsRow>();
+            List<string> steps = new List<string>();
 
             foreach (StepsRow row in Steps)
             {
                 if (row.Active == EnumContainer.ActivityLevel.Active)
-                    steps.Add(row);
+                    steps.Add(row.StepNum.ToString() + " " + row.StepDescription);//new Step(row.StepNum, row.StepDescription));
             }
 
-            steps.Sort((x, y) => x.StepNum.CompareTo(y.StepNum)); 
+            steps.Sort();
+            //steps.Sort(((x, y) => x.StepNum.CompareTo(y.StepNum)); 
 
             return steps;
         }
@@ -104,5 +105,25 @@ namespace Bartender
 
             throw new Exception(Message.IMAGE_ROW_INVALID);
         }
+
+        #region subclasses
+        public class Step
+        {
+            public int StepNum = -1;
+            public string Description = "";
+
+            /// <summary>
+            /// This class is designated to hold each step number/step description pair.
+            /// </summary>
+            /// <param name="stepNum"></param>
+            /// <param name="description"></param>
+            public Step(int stepNum, string description)
+            {
+                StepNum = stepNum;
+                Description = description;
+            }
+        }
+
+        #endregion
     }
 }
