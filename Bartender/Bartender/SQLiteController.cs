@@ -45,8 +45,6 @@ namespace Bartender
                 //TODO: Write SELECT stamement builder
             }
 
-
-
             return MenuItemDataConverter.buildMenuItemList(data);
         }
 
@@ -257,6 +255,12 @@ namespace Bartender
             return false;
         }
 
+        public void deactivateRow(Row row)
+        {
+            // TODO: write the UPDATE statement for changing the acivity level of a row.
+        }
+
+        /*
         /// <summary>
         /// Deletes a single item from the database.
         /// </summary>
@@ -270,7 +274,9 @@ namespace Bartender
                 // TODO: Create DELETE FROM TABLE statement builder
             }
         }
+        */
 
+        /*
         /// <summary>
         /// Grabs all the unique items from a specified column
         /// </summary>
@@ -288,6 +294,6 @@ namespace Bartender
             }
 
             return uniqueItems;
-        }
+        }*/
     }
 }

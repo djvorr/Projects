@@ -20,7 +20,10 @@ namespace Bartender
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
-            // TODO: Finish the conversion code
+            buildMenuItems(rows, menuItems);
+            addStepsToMenuItems(rows, menuItems);
+            addImagesToMenuItems(rows, menuItems);
+            addIngredientsToMenuItems(rows, menuItems);
 
             return menuItems;
         }
@@ -61,11 +64,12 @@ namespace Bartender
         /// <param name="menuItems"></param>
         static private void addStepsToMenuItems(List<Row> rows, List<MenuItem> menuItems)
         {
-            foreach (MenuItemRow row in rows)
+            foreach (StepsRow row in rows)
             {
                 foreach (MenuItem menuItem in menuItems)
                 {
-                    //TODO: finish the adding steps code
+                    if (row.Name == menuItem.getHeader().Name)
+                        menuItem.addStepsRow(row);
                 }
             }
         }
@@ -77,11 +81,12 @@ namespace Bartender
         /// <param name="menuItems"></param>
         static private void addImagesToMenuItems(List<Row> rows, List<MenuItem> menuItems)
         {
-            foreach (MenuItemRow row in rows)
+            foreach (ImageRow row in rows)
             {
                 foreach (MenuItem menuItem in menuItems)
                 {
-                    //TODO: finish the adding images code
+                    if (row.Name == menuItem.getHeader().Name)
+                        menuItem.addImageRow(row);
                 }
             }
         }
@@ -93,11 +98,12 @@ namespace Bartender
         /// <param name="menuItems"></param>
         static private void addIngredientsToMenuItems(List<Row> rows, List<MenuItem> menuItems)
         {
-            foreach (MenuItemRow row in rows)
+            foreach (IngredientsRow row in rows)
             {
                 foreach (MenuItem menuItem in menuItems)
                 {
-                    //TODO: finish the adding ingredients code
+                    if (row.Name == menuItem.getHeader().Name)
+                        menuItem.addIngredientsRow(row);
                 }
             }
         }
@@ -109,7 +115,7 @@ namespace Bartender
         /// <param name="row"></param>
         /// <param name="menuItems"></param>
         /// <returns></returns>
-        static public bool findExistingMenuItem(MenuItemRow row, List<MenuItem> menuItems)
+        static private bool findExistingMenuItem(MenuItemRow row, List<MenuItem> menuItems)
         {
             foreach (MenuItem menuItem in menuItems)
             {

@@ -172,6 +172,7 @@ namespace Bartender
             throw new Exception(Message.MENU_ITEM_NO_TYPE);
         }
 
+        /*
         #region subclasses
         public class Step
         {
@@ -191,5 +192,6 @@ namespace Bartender
         }
 
         #endregion
+        */
     }
 }

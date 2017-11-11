@@ -7,7 +7,7 @@ namespace Bartender
 {
     public partial class MainForm : Form
     {
-        string FILENAME = "MenuItems.sqlite";
+        string FILENAME = "Data.sqlite";
         private List<MenuItem> menuItems = new List<MenuItem>();
 
         public MainForm()
@@ -17,25 +17,17 @@ namespace Bartender
         }
 
         /// <summary>
-        /// Loads the controls with values from the database.
+        /// Loads the controls with the provided menu items.
         /// </summary>
-        private void loadControls(EnumContainer.Type type)
+        private void loadControls(List<MenuItem> menuItems)
         {
-            //TODO: consider removing check
-            if ((new SQLiteController()).fileExists(FILENAME))
-            {
-                List<MenuItem> menuItems = getMenuItems(type);
+            foreach (MenuItem item in menuItems)
+                lbMenuItems.Items.Add(item.getHeader().Name);
 
-                foreach (MenuItem item in menuItems)
-                {
-                    lbMenuItems.Items.Add(item.getHeader().Name);
-                }
+            lbMenuItems.SelectedIndex = 0;
 
-                lbMenuItems.SelectedIndex = 0;
-
-                List<string> steps = getMenuItemRef(menuItems, lbMenuItems.SelectedItem.ToString()).getSteps();
-                addStringsToListBox(lbInstructions, steps);
-            }
+            List<string> steps = getMenuItemRef(menuItems, lbMenuItems.SelectedItem.ToString()).getSteps();
+            addStringsToListBox(lbInstructions, steps);
         }
 
         /// <summary>
